@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Herbal Tea Remedy Finder</title>
+    <style>
+        body{font-family:system-ui,sans-serif;max-width:900px;margin:0 auto;padding:15px;background:#f5f8f5;color:#333}
+        h1{color:#3a7563;text-align:center;margin-bottom:20px}
+        .container{display:flex;flex-wrap:wrap;gap:15px}
+        .panel{background:white;border-radius:8px;padding:15px;box-shadow:0 2px 4px rgba(0,0,0,0.1)}
+        .herbs-container,.symptoms-container{flex:1;min-width:250px}
+        .recipe-container{flex-basis:100%;margin-top:15px}
+        h2{color:#3a7563;margin-top:0;font-size:1.2rem}
+        .herb-list{list-style:none;padding:0;margin:0}
+        .herb-item{margin-bottom:6px;display:flex;align-items:center}
+        .herb-item label{margin-left:6px;cursor:pointer}
+        .tag-cloud{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+        .symptom-tag{background:#eaeaea;color:#888;padding:4px 10px;border-radius:15px;font-size:0.9rem;cursor:not-allowed;transition:all 0.3s}
+        .symptom-tag.available{background:#e0f0e9;color:#3a7563;cursor:pointer}
+        .symptom-tag.selected{background:#3a7563;color:white}
+        .recipe{border-left:3px solid #3a7563;padding-left:12px;margin-bottom:20px}
+        .recipe h3{margin:0 0 8px;color:#3a7563;font-size:1.1rem}
+        .intro-text{text-align:center;margin-bottom:15px;color:#666;font-size:0.9rem}
+        p{margin:8px 0;font-size:0.95rem}
+        .recipe-list{margin:5px 0 10px;padding-left:20px}
+        .recipe-list li{margin-bottom:5px}
+    </style>
+</head>
+<body>
+    <h1>Herbal Tea Remedy Finder</h1>
+    <p class="intro-text">Select herbs you have, then choose symptoms you'd like to address.<br>We'll create personalized tea recipes for you.</p>
+    
+    <div class="container">
+        <div class="panel herbs-container">
+            <h2>Available Herbs</h2>
+            <ul class="herb-list" id="herb-list"></ul>
+        </div>
+        
+        <div class="panel symptoms-container">
+            <h2>Symptoms</h2>
+            <div class="tag-cloud" id="symptom-cloud"></div>
+        </div>
+        
+        <div class="panel recipe-container">
+            <h2>Your Tea Recipes</h2>
+            <div id="recipes-output"></div>
+        </div>
+    </div>
+
+    <script>
+        let herbData = [];
+        
+        async function loadHerbs() {
+            try {
+                const response = await fetch('herbal-tea-database.json');
+                const data = await response.json();
+                herbData = data.herbs;
+                init();
+            } catch (error) {
+                console.error("Error loading herbs: ", error);
+            }
+        }
+
+        function init() {
+            const herbList = document.getElementById('herb-list');
+            const symptomCloud = document.getElementById('symptom-cloud');
+            
+            herbData.forEach(herb => {
+                const li = document.createElement('li');
+                li.className = 'herb-item';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = herb.id;
+                checkbox.value = herb.name;
+                checkbox.addEventListener('change', updateSymptoms);
+                
+                const label = document.createElement('label');
+                label.htmlFor = checkbox.id;
+                label.textContent = herb.name;
+                
+                li.appendChild(checkbox);
+                li.appendChild(label);
+                herbList.appendChild(li);
+            });
+        }
+        
+        window.onload = loadHerbs;
+    </script>
+</body>
+</html>
